@@ -1,0 +1,25 @@
+{
+	"columnList":{
+		"name":{
+			"describe":"人名",
+			"type":"string",
+			"maxlength":10
+		},
+		"age":{
+			"describe":"人的年龄",
+			"type":"number",
+			"maxlength":3
+		},
+		"sex":{
+			"describe":"性别",
+			"type":"string",
+			"maxlength":4
+		},
+		"phoneNumber":{
+			"describe":"手机号码",
+			"type":"number",
+			"maxlength":11,
+			"regexp":"/^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/"
+		}
+	}
+}

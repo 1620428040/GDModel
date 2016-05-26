@@ -1,6 +1,7 @@
 <?php
 //将传入的参数整合到$params中
-$params=$_GET;
+$params=array();
+$params+=$_GET;
 $params+=$_POST;
 //如果action为空，则输出控制页面
 if(!isset($params['action'])){
