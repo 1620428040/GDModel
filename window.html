@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>GDUniversalModel</title>
+		<style type="text/css">
+			body{
+				width: 100%;
+				margin: 0;
+				top: 0px;
+				bottom: 0px;
+				height: auto;
+				position: absolute;
+			}
+			.header{
+				background-color: azure;
+				height: 20px;
+				width: 100%;
+				border: 1px solid bisque;
+			}
+			.left{
+				top: 20px;
+				bottom: 0px;
+				height: auto;
+				position: absolute;
+				background-color: lightgrey;
+				width: 200px;
+			}
+			.left ul{
+				top: 20px;
+				left: 10px;
+				bottom: 10px;
+				right: 10px;
+				height: auto;
+				width: auto;
+				position: absolute;
+				margin: 0;
+				padding: 0;
+			}
+			.left li{
+				margin: 10px 0px 0px 0px;
+				height: 20px;
+				width: 100%;
+				text-align: center;
+			}
+			.right{
+				top: 20px;
+				bottom: 0px;
+				left: 200px;
+				right: 0px;
+				height: auto;
+				width: auto;
+				position: absolute;
+			}
+			.toolBar{
+				top: 0px;
+				height: 30px;
+				border: 1px solid cornsilk;
+			}
+			.button{
+				height: 24px;
+				width: 100px;
+				font-size: 24px;
+				text-align: center;
+				margin: 3px 5px 3px 5px;
+				background-color: chartreuse;
+				position: relative;
+				float: left;
+				border: 1px solid bisque;
+			}
+			.button2{
+				height: 24px;
+				width: 100px;
+				font-size: 24px;
+				text-align: center;
+				margin: 3px 5px 3px 5px;
+				background-color: red;
+				position: relative;
+				float: right;
+			}
+			.dataView{
+				top: 30px;
+				bottom: 0px;
+				height: auto;
+				width: 100%;
+				position: absolute;
+			}
+			.table{
+				width: 100%;
+				text-align: center;
+			}
+			.table tr{
+				
+			}
+			.table td{
+				border: 1px solid antiquewhite;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header">
+			<span>通用数据模型 copyright by GD</span>
+			<span>&nbsp;&nbsp;</span>
+			<span id="tip" style="color: darkcyan;">
+				准备就绪
+			</span>
+		</div>
+		<div class="left">
+			<ul>
+				<li>新建</li>
+				<li>模型1</li>
+				<li>模型2</li>
+				<li>模型3</li>
+				<li>模型4</li>
+			</ul>
+		</div>
+		<div class="right">
+			<div class="toolBar">
+				<div class="button">
+					增加
+				</div>
+				<div class="button">
+					删除
+				</div>
+				<div class="button">
+					修改
+				</div>
+				<div class="button">
+					查找
+				</div>
+				<div class="button">
+					排序
+				</div>
+				<div class="button2">
+					删除模型
+				</div>
+				<div class="button2">
+					新建模型
+				</div>
+			</div>
+			<div class="dataView">
+				<table class="table">
+					<tr>
+						<td>content</td>
+						<td>content</td>
+						<td>content</td>
+					</tr>
+					<tr>
+						<td>content</td>
+						<td>content</td>
+						<td>content</td>
+					</tr>
+					<tr>
+						<td>content</td>
+						<td>content</td>
+						<td>content</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>
