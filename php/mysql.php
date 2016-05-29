@@ -1,19 +1,12 @@
 <?php
-//header("Content-type: text/html; charset=utf-8"); //输出内容之前，说明编码类型
-
-//进行数据库操作的类，操作方法
-//$db=new GDMySQL("127.0.0.1","root","123456","test");//新建对象
-//$db->connect();//连接数据库
-//print_r($db->search("table1", "name='张三' or age=231"));//中间进行操作
-//$db->close();//关闭数据库连接
-
-class GDMySQL{
+class MySQLClass{
 	var $server;//数据库所在的服务器
 	var $username;//用户名
 	var $password;//密码
 	var $database;//数据库名
 	
 	var $connect;//与数据库的连接
+
 	//构造函数
 	function __construct($server,$username,$password,$database){
 		$this->server=$server;
@@ -27,6 +20,7 @@ class GDMySQL{
 			$this->close();
 		}
 		$this->connect=mysql_connect($this->server,$this->username,$this->password);
+		$this->setDatabase($this->database);
 		if(!$this->connect){
 			die("Error:".mysql_error());
 		}
@@ -37,9 +31,18 @@ class GDMySQL{
 			mysql_close($this->connect);
 		}
 	}
+	//设置活动的数据库
+	function setDatabase($databaseName){
+		mysql_select_db($databaseName,$this->connect);
+	}
+	//添加header
+	function header(){
+		header("Content-type: text/html; charset=utf-8");
+	}
 	//执行任意的sql语句
 	function query($query){
-		$result=mysql_db_query($this->database,$query,$this->connect);
+		writeStringToFile('query', $query);
+		$result=mysql_query($query,$this->connect);
 		if(!$result){
 			die("Error:".mysql_error());
 		}
@@ -47,25 +50,19 @@ class GDMySQL{
 			return $result;
 		}
 	}
-	//解析返回的结果
+	//解析返回的结果为二维数组
 	function fetch($result){
-		mysql_data_seek($result, 0);
-		$table=array();
-		while($row=mysql_fetch_array($result)){
-			$table[]=$row;
+		try{
+			mysql_data_seek($result, 0);
+			$table=array();
+			while($row=mysql_fetch_array($result)){
+				$table[]=$row;
+			}
+			return $table;
 		}
-		return $table;
-	}
-	//按条件搜索，返回值是一个二维数组
-	//$database->search("tablename", "name='张三' or age=231");
-	function search($table,$require){
-		$sqlString="select * from $table";
-		if($require!=null){
-			$sqlString.=" where ".$require;
+		catch(Exception $exce){
+			echo 'Message: ' .$exce->getMessage();
 		}
-		echo $sqlString."<br/>";
-		$result=$this->query($sqlString);
-		return $this->fetch($result);
 	}
 	//插入新的数据，$array为传递参数用的关联数组
 	//$database->insert("tablename", array("name"=>"张三","age"=>23));
@@ -94,6 +91,135 @@ class GDMySQL{
 		$sqlString.=$str;
 		return $this->query($sqlString);
 	}
+	//删除记录
+	//$database->delete("tablename", "name='张三' or age=231");
+	function delete($table,$where){
+		$sqlString="delete from $table";
+		
+		//添加where条件
+		$sqlString.=$this->parserWhere($where);
+
+		return $result=$this->query($sqlString);
+	}
+	//更新记录
+	function update($table,$where,$array){
+		$sqlString="update $table set ";
+		$i=0;
+		foreach($array as $key=>$value){
+			$sqlString.="$key=";
+			if(is_string($value)){
+				$sqlString.="'".$value."'";
+			}
+			else{
+				$sqlString.=$value;
+			}
+			if($i!=count($array)-1){
+				$sqlString.=",";
+			}
+			else{
+				$sqlString.=" ";
+			}
+			$i++;
+		}
+		
+		//添加where条件
+		$sqlString.=$this->parserWhere($where);
+		
+		return $this->query($sqlString);
+	}
+	//按条件搜索，返回值是一个二维数组
+	//$result=$db->search("person",array("or"=>array("name="=>"张三","age="=>23),"name="=>"张三","age="=>21),array("name","age"),array("name"=>null,"age"=>null));
+	//参数是表名，条件，需要的字段名，排序
+	function search($table,$where,$which,$order){
+		$filed="";
+		if($which==null||$which=="*"){
+			$filed="*";
+		}
+		elseif(is_string($which)){
+			$filed=$which;
+		}
+		elseif(is_array($which)){
+			for($i=0;$i<count($which);$i++){
+				$filed.=$which[$i];
+				if($i!=count($which)-1){
+					$filed.=",";
+				}
+			}
+		}
+		$sqlString="select $filed from $table";
+		
+		//添加where条件
+		$sqlString.=$this->parserWhere($where);
+		
+		if($order!=null){
+			if(is_string($order)){
+				$sqlString.=" order by $order";
+			}
+			elseif(is_array($order)){
+				$sqlString.=" order by ";
+				$i=0;
+				foreach($order as $key=>$value){
+					if($value==null||$value==0||$value=="ASC"||$value=="asc"){
+						$sqlString.="$key asc";
+					}
+					else{
+						$sqlString.="$key desc";
+					}
+					if($i!=count($order)-1){
+						$sqlString.=",";
+					}
+					$i++;
+				}
+			}
+		}
+		$result=$this->query($sqlString);
+		return $this->fetch($result);
+	}
+	//解析where条件,允许为空，允许为数组，允许为字符串，默认为and 类型的连接
+	function parserWhere($where){
+		if($where==null){
+			return "";
+		}
+		elseif(is_string($where)){
+			return " where ".$where;
+		}
+		elseif(is_array($where)){
+			return " where ".$this->parserWhereArray($where);
+		}
+		else{
+			return "";
+		}
+	}
+	function parserWhereArray($array,$type="and"){
+		$count=count($array);
+		$i=0;
+		$string="";
+		foreach($array as $key=>$value){
+			if($key=="and"||$key=="AND"){
+				$string .=$this->parserWhereArray($value,"and");
+			}
+			elseif($key=="or"||$key=="OR"){
+				$string .=$this->parserWhereArray($value,"or");
+			}
+			else{
+				if(is_string($value)){
+					$string.= "$key'".$value."'";
+				}
+				else{
+					$string.= "$key$value";
+				}
+			}
+			$i++;
+			if($i<$count){
+				$string .=" $type ";
+			}
+		}
+		if($count>1){
+			$string="( $string )";
+		}
+		return $string;
+	}
+	
 }
 
 ?>

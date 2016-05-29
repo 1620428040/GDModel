@@ -2,12 +2,14 @@
 describe对配置/model/字段的描述，可以是中文，在调试模式下可以输出
 path保存路径，如果在json/目录中，则省略
 forbidden，禁止出现的字符串，以数组的形式
+checked是否已经提交更改，默认值是false,修改后会变成false，直到提交修改。
+		config中的这项值，只代表是否提交了设置
 
 config.json作为设置文件，其中
 	mysql作为连接数据库的参数
 	modelList,所有model的列表，path/name，这种形式
 
-每个model都有名称相同的json文件
+每个model都有同名的json文件
 	mysql如果model需要连接非默认的数据库，则在这设置，否则省缺
 	tableName对应的数据表名，如果与model同名，可以省缺
 	columnList是索引数组，其中的元素是
